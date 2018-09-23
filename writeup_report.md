@@ -19,13 +19,17 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[dataVisualization]: ./examples/dataVisualization.jpg "dataVisualization"
-[originalImage]:     ./examples/originalImage.jpg "originalImage"
-[preprocessedImage]: ./examples/preprocessedImage.jpg "preprocessedImage"
-[generatedImage]: ./examples/generatedImage.jpg "generatedImage"
+[dataVisualization]: ./output_images/dataVisualization.jpg "dataVisualization"
 
-[onlineTrafficSignImages]: ./examples/onlineTrafficSignImages.jpg "Online Traffic Sign Immges"
-[onlineTrafficSignImagesPredictions]: ./examples/onlineTrafficSignImagesPredictions.jpg "onlineTrafficSignImagesPredictions"
+[dataDistribution]:     ./output_images/dataDistribution.jpg "dataDistribution"
+[augmentedDataDistribution]:     ./output_images/augmentedDataDistribution.jpg "augmentedDataDistribution"
+
+[originalAndGeneratedImages]:     ./output_images/originalAndGeneratedImages.jpg "originalAndGeneratedImages"
+[originalAndPreprocessedImages]:     ./output_images/originalAndPreprocessedImages.jpg "originalAndPreprocessedImages"
+
+[onlineTrafficSignImages]: ./output_images/onlineTrafficSignImages.jpg "Online Traffic Sign Immges"
+[onlineTrafficSignImagesPreprocessed]: ./output_images/onlineTrafficSignImagesPreprocessed.jpg "onlineTrafficSignImagesPreprocessed"
+[onlineTrafficSignImagesPredictions]: ./output_images/onlineTrafficSignImagesPredictions.jpg "onlineTrafficSignImagesPredictions"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  

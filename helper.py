@@ -9,7 +9,7 @@ gTrafficSignClassifierCsvData = pd.read_csv("signnames.csv")
     Helper for plotting multiple images and giving them titles
 '''
 
-def plotImages(images, titles=[""], columns=1, figsize=(20,10), gray=False):
+def plotImages(images, titles=[""], columns=1, figsize=(20,10), gray=False, saveAs=''):
     errorStr = "plotImages failed..."
     # images and titles must be lists
     if(not isinstance(images, (list,)) or not isinstance(titles, (list,))):
@@ -23,6 +23,9 @@ def plotImages(images, titles=[""], columns=1, figsize=(20,10), gray=False):
         return
     
     plt.figure(figsize=figsize)
+    
+    fig = plt.gcf()
+    
     for i, image in enumerate(images):
         plt.subplot(len(images) / columns + 1, columns, i + 1)
         
@@ -30,13 +33,15 @@ def plotImages(images, titles=[""], columns=1, figsize=(20,10), gray=False):
             plt.gca().set_title(titles[i])
         else:
             plt.gca().set_title(titles[i % columns])
-        
+       
         if gray:
             plt.imshow(image, cmap="gray")
         else:
             plt.imshow(image)
 
-        
+    if saveAs != '':
+        fig.savefig(saveAs, dpi=fig.dpi)
+
 '''
     Helper for getting the traffic sign name from an integer id
 '''
