@@ -9,7 +9,7 @@ gTrafficSignClassifierCsvData = pd.read_csv("signnames.csv")
     Helper for plotting multiple images and giving them titles
 '''
 
-def plotImages(images, titles=[""], columns=1, figsize=(20,10)):
+def plotImages(images, titles=[""], columns=1, figsize=(20,10), gray=False):
     errorStr = "plotImages failed..."
     # images and titles must be lists
     if(not isinstance(images, (list,)) or not isinstance(titles, (list,))):
@@ -31,7 +31,10 @@ def plotImages(images, titles=[""], columns=1, figsize=(20,10)):
         else:
             plt.gca().set_title(titles[i % columns])
         
-        plt.imshow(image)
+        if gray:
+            plt.imshow(image, cmap="gray")
+        else:
+            plt.imshow(image)
 
         
 '''
