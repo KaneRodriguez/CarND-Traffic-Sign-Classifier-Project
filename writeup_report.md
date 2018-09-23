@@ -51,44 +51,48 @@ You're reading it! and here is a link to my [project code](https://github.com/ka
 * The shape of a traffic sign image is 32 x 32 with 3 channels
 * The number of unique classes/labels in the data set is 43
 
-Here is an exploratory visualization of the data set. It is a bar chart showing the distribution of the types of classifiers found in the training, validation, and testing image sets.
+Each type of traffic sign in the data set is shown below:
 
 ![dataVisualization][dataVisualization]
+
+Here is an exploratory visualization of the data set. It is a bar chart showing the distribution of the types of classifiers found in the training, validation, and testing image sets.
+
+![dataDistribution][dataDistribution]
 
 ### Design and Test a Model Architecture
 
 #### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
 
-First, I decided to convert the images to grayscale because I wanted to ignore the noise that can come with color. In this case, the majority of the image information to be gained lies within the shape of the traffic sign, the shape of the images depicted on the sign, and any text on the sign. I also normalized the image, per the projects recommendations, because doing so lead to a mean closer to zero for the training data. In practice, this helps speed up the time to train our model. 
+First, I decided to convert the images to grayscale because I wanted to ignore the noise that can come with color. In this case, the majority of the image information to be gained lies within the shape of the traffic sign, the shape of the images depicted on the sign, and any text on the sign. I also normalized the image, per the projects recommendations, because doing so leads to a mean closer to zero for the training data. In practice, this helps speed up the time to train our model. 
 
-<b>Note</b>: color information can be useful, but processing 3 channels provides an increasingly computationally complex problem than a 1 channel image!
+<b>Note</b>: Color information can be useful, but processing 3 channels provides an increasingly computationally complex problem than a 1 channel image!
 
 An example of a traffic sign image before and after preprocessing is given below:
 
-|        Original Image           |    Preprocessed Image                   |
-|:-------------------------------:|:---------------------------------------:|
-| ![originalImage][originalImage] | ![preprocessedImage][preprocessedImage] |
+![originalAndPreprocessedImages][originalAndPreprocessedImages]
 
 To minimize the variance of the data, additional data was generated. 
 
-To do this, I decided to generate new images from currently existing images for each classifier in the training set that falls below the median classifier bin size.
+I generated new images from preexisting images for each classifier in the training set. New images were generated for each bin until all bins had the same amount of images as the max bin. 
 
-I measured variance based on the frequency of each label in the training set; I calculated the median amount of images per label, and I chose to have each current image contribute a fraction of the difference between it's repective bin size and the median. The resulting distribution of this process produces the chart below.
+The resulting classifier distribution in the augmented data set is given in the chart below.
 
-The steps to generating new images involved two modifications. First, I randomly rotate the image anywhere from -15 to 15 degrees. Then, I warp the image to create a "zoomed in" image. I did this because in my initial tests I found that my model did not detect online images that were at an angle very well, and I hoped that augmenting the training data set with traffic signs in different orientations would make the model robust to these instances.
+![augmentedDataDistribution][augmentedDataDistribution]
+
+The steps to generating new images involved two modifications. First, I convert the image into HLS format and alter the brightness of each pixel by anywhere from 80% to 120%. I convert the image back into RGB format, and I randomly rotate the image anywhere from -10 to 10 degrees. Finally, I randomly translate the image in the x or y direction anywhere from -2 to 2 pixels.
 
 Here is an example of an original image and a generated image:
 
-|        Original Image           |    Augmented Image                      |
-|:-------------------------------:|:---------------------------------------:|
-| ![originalImage][originalImage] | ![generatedImage][generatedImage]       |
+![originalAndGeneratedImages][originalAndGeneratedImages]
+
+At one point in time I tried to apply a shear and scale, and I found that doing so only decreased my accuracy. This could have been a result of how much I was shearing or how much larger or smaller I was making the image. I stuck with translating, rotating, and brightening because this provided enough variance in the generated images to make each somewhat unique.
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
 
 #### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
-My final model used an Adam Optimizer, a 128 image batch size, 15 epochs, and a 0.0001 learning rate.
+My final model used an Adam Optimizer, a 128 image batch size, 20 epochs, and a 0.0001 learning rate.
 
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
