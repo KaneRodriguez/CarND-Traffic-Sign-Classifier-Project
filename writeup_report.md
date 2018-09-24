@@ -2,8 +2,6 @@
 
 ## Writeup
 
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
-
 ---
 
 **Build a Traffic Sign Recognition Project**
@@ -15,7 +13,6 @@ The goals / steps of this project are the following:
 * Use the model to make predictions on new images
 * Analyze the softmax probabilities of the new images
 * Summarize the results with a written report
-
 
 [//]: # (Image References)
 
@@ -99,15 +96,15 @@ TODO: My final model used an Adam Optimizer, a 128 image batch size, 20 epochs, 
 
 ##### Initial Solution (LeNet-5)
 
-My initial solution to the problem involved a LeNet-5 architecture applied to normalized (0.0 to 1.0 pixel values) gray scaled (32x32x1) images. This resulted in an accuracy of 89% on the validation set. To increase accuracy, I initially chose to randomly rotate 25% of the training images by a multiple of 90 degrees. Adding random rotations resulted in an 82% accuracy on the validation set. This could be beneficial if the input images are expected to contain traffic signs at a large range of angles, but data visualizations of the testing and validation sets show that this is not the case. Also, traffic signs that depict turning in one direction and are now pointing to the opposite direction could be one cause of the reduction in accuracy.
+My initial solution to the problem involved a LeNet-5 architecture applied to normalized (0.0 to 1.0 pixel values) gray scaled (32x32x1) images. This resulted in an accuracy of 89% on the validation set. To increase accuracy, I initially chose to randomly rotate 25% of the training images by a multiple of 90 degrees. Adding random rotations resulted in an 82% accuracy on the validation set. This could be beneficial if the input images are expected to contain traffic signs at a large range of angles, but data visualizations of the testing and validation sets show that this is not the case. Also, traffic signs that depict turning in one direction and are rotated 180 degrees in the opposite direction could be one cause of the reduction in accuracy.
 
 ##### Solution 2 (SimpNet)
 
-I decided to rewrite my model to follow the SimpNet architecture described in [this](https://arxiv.org/pdf/1802.06205.pdf) paper. The paper presents a deep convolusional network that uses less parameters and operations while still empirically achieving state-of-the-art on standard data sets (i.e. MNST). They discussed the benefits of max-pooling over strided convolutions, they proposed "SAF-pooling" (essentially max-pooling followed by dropout), and why not to use 1x1 convolutions or fully connected layers in the beginning of an architecture. Unfortunately, my implementation resulted in a model with so many layers and parameters that I was unable to run the model on my puny laptop...
+I decided to rewrite my model to follow the SimpNet architecture described in [this](https://arxiv.org/pdf/1802.06205.pdf) paper. The paper presents a deep convolusional network that uses less parameters and operations while still empirically achieving state-of-the-art on standard data sets (i.e. MNST). They discussed the benefits of max-pooling over strided convolutions, they proposed "SAF-pooling" (essentially max-pooling followed by dropout), and why not to use 1x1 convolutions or fully connected layers in the beginning of an architecture. Unfortunately, this 'minimal' solution resulted in a model with so many layers and parameters that I was unable to run the model on my puny laptop. This could be a result of my incorrect implementation, and I may possibly revisit this in the future.
 
 ##### Solution 3 (Augmenting the Data Set)
 
-Moving forward, I reverted back to the LeNet architecture and prioritized the data itself. I changed the way I was normalizing my data so that it would have a mean closer to zero (1.0 to 0.32). Then, I generated new data from preexisting data based on which classifier bins were below the mean bin size. This resulted in my lowering the variance of my data by 56% and improving my validation set accuracy to 92.8%.
+Moving forward, I reverted back to the LeNet architecture and decided to prioritize the data itself. I changed the way I was normalizing my data so that it would have a mean closer to zero (1.0 to 0.32). Then, I generated new data from preexisting data based on which classifier bins were below the mean bin size. This resulted in my lowering the variance of my data by 56% and improving my validation set accuracy to 92.8%.
 
 ##### Solution 4 (Multi-Scale Convolusional Neural Network)
 
@@ -121,7 +118,7 @@ To achieve an even higher accuracy, I lowered the variance of the data set from 
 
 <b>Note</b>: variance measured with `np.bincount(y_train)`, with `y_train` being the array of labels for the training data set.
 
-With a 94.6% accuracy on the validation set and a 93.3% accuracy on the test set, this model appears to not be overfitting the training data.
+With a 94.6% accuracy on the validation set and a 93.3% accuracy on the test set, this model appears to not be drastically overfitting the training data.
 
 ##### Activation Function
 
@@ -129,7 +126,15 @@ Rectified Linear Unit's (ReLU's) are used for the activation functions because i
 
 ##### Future Considerations
 
+1. Image Generation from Labeled Coordinates
+
 A future modification to the preprocessing step involves utilizing the 'coords' data that specifies where a traffic sign is found within an image. With these coordinates, one can decide to initialize the weights to reflect this priotization instead of starting the weights at random or perhaps one can autogenerate more images from the road signs found in these images. I attempted to utilize the coordinates in generating new data, and I was unable to make use of them since they were not also scaled with the data that they came with.
+
+2. Architectural Changes
+
+Per the recommendations outlined in the [paper](https://arxiv.org/pdf/1802.06205.pdf) on SimpNet, I attempted to implement SAF's; I found that this did not improve my accuracy. However, a future modification to the current architecture would be to follow the papers suggestions and replace any 5x5 convolusional layers with multiple 3x3 layers in order to make our network 'deeper.' 
+
+Another, more intuitive, architectural change involves not converting to grayscale and leveraging the 3 color channels that each image comes with. This will provide more information for differentiating traffic signs of different colors. Although this will provide more information for differentiating traffic signs of different base colors, I believe this has the potential to introduce some noise into the model. For example, stop sign images used to train the model could be captured in a different lighting than some stop signs we wish to detect in the real world. Depending on how much weight the model put on color, the model could possibly classify the input stop sign image as something else entirely! To guard against this, generating new images with a varying amount of brightness could be mandatory in order to make the model robust in these situations.
 
 ### Test a Model on New Images
 
@@ -147,18 +152,21 @@ Five German traffic signs found online are show below
 
 #### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
 
-TODO:
-
-Here are the results of the prediction:
+Here are the results of the predictions, followed by the confidence the model had on each label and the other top 4 labels for each:
 
 [onlineTrafficSignImagesPredictions]: ./output_images/onlineTrafficSignImagesPredictions.jpg "onlineTrafficSignImagesPredictions"
 
-The model was able to correctly guess 2 of the 5 traffic signs, which gives an accuracy of 40%. This did worse than the 
+The model was able to correctly guess TODO of the TODO traffic signs, which gives an accuracy of TODO%, thereby performing TODO than the validation set and test set. 
+
+I believe the model incorrectly labeled the TODO image due to the image losing important traffic sign information after preprocessing. One can see above (Question 1 of this section) that the TODO traffic sign has is unrecognizable to the human eye as a TODO image. 
+
+This loss occured when reshaping the input image to a 32x32 image. Possible rectifications to this issue include correctly downsampling the image or possibly running a shape detection algorithm to automatically detect the sign and crop that section of the image.
 
 #### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
 
+The model appeared to be TODO certain when predicting TODO of the images. The model was TODO TODO TODO TODO
 
-![onlineTrafficSignImagesPredictions][onlineTrafficSignImagesPredictions]
+As described in question 2 above, the model had a difficult time recognizing the preprocessed form of the TODO image. 
 
 ### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
 #### 1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
