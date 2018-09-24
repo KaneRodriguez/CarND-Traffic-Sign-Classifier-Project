@@ -46,7 +46,7 @@ You're reading it! and here is a link to my [project code](https://github.com/ka
 #### 1. Provide a basic summary of the data set. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
 
 * The size of training set is 34799
-* The size of the validation set is ?
+* The size of the validation set is 4410
 * The size of test set is 12630
 * The shape of a traffic sign image is 32 x 32 with 3 channels
 * The number of unique classes/labels in the data set is 43
@@ -79,26 +79,27 @@ The resulting classifier distribution in the augmented data set is given in the 
 
 ![augmentedDataDistribution][augmentedDataDistribution]
 
-The steps to generating new images involved two modifications. First, I convert the image into HLS format and alter the brightness of each pixel by anywhere from 80% to 120%. I convert the image back into RGB format, and I randomly rotate the image anywhere from -10 to 10 degrees. Finally, I randomly translate the image in the x or y direction anywhere from -2 to 2 pixels.
+The steps to generating new images involved two modifications. First, I convert the image into HLS format and alter the brightness of each pixel by anywhere from 80% to 120% of the original pixel. I convert the image back into RGB format, and I randomly rotate the image anywhere from -10 to 10 degrees. Finally, I randomly translate the image in the x or y direction anywhere from -2 to 2 pixels.
 
 Here is an example of an original image and a generated image:
 
 ![originalAndGeneratedImages][originalAndGeneratedImages]
 
-At one point in time I tried to apply a shear and scale, and I found that doing so only decreased my accuracy. This could have been a result of how much I was shearing or how much larger or smaller I was making the image. I stuck with translating, rotating, and brightening because this provided enough variance in the generated images to make each somewhat unique.
+At one point in time I tried to apply a shear and scale, and I found that doing so only decreased my accuracy. This could have been a result of how much I was shearing or how much larger or smaller I was making the image. I stuck with translating, rotating, and brightening because this provided enough variance in the generated images to make each somewhat unique while not conributing too much noise to the data set. (i.e. these modifications did not cause the traffic signs to become unrecognizable)
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
+TODO
 
 #### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
-My final model used an Adam Optimizer, a 128 image batch size, 20 epochs, and a 0.0001 learning rate.
+TODO: My final model used an Adam Optimizer, a 128 image batch size, 20 epochs, and a 0.0001 learning rate.
 
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
 ##### Initial Solution (LeNet-5)
 
-My initial solution to the problem involved a LeNet-5 architecture applied to normalized (0.0 to 1.0) gray scaled (32x32x1) images. This resulted in an accuracy of 89% on the validation set. To increase accuracy, I initially chose to randomly rotate 25% of the training images by a multiple of 90 degrees. Adding random rotations resulted in an 82% accuracy on the validation set. This could be beneficial if the input images are expected to contain traffic signs at a large range of angles, but data visualizations of the testing and validation sets show that this is not the case. Also, traffic signs that depict turning in one direction and are now pointing to the opposite direction could be one cause of the reduction in accuracy.
+My initial solution to the problem involved a LeNet-5 architecture applied to normalized (0.0 to 1.0 pixel values) gray scaled (32x32x1) images. This resulted in an accuracy of 89% on the validation set. To increase accuracy, I initially chose to randomly rotate 25% of the training images by a multiple of 90 degrees. Adding random rotations resulted in an 82% accuracy on the validation set. This could be beneficial if the input images are expected to contain traffic signs at a large range of angles, but data visualizations of the testing and validation sets show that this is not the case. Also, traffic signs that depict turning in one direction and are now pointing to the opposite direction could be one cause of the reduction in accuracy.
 
 ##### Solution 2 (SimpNet)
 
@@ -108,12 +109,19 @@ I decided to rewrite my model to follow the SimpNet architecture described in [t
 
 Moving forward, I reverted back to the LeNet architecture and prioritized the data itself. I changed the way I was normalizing my data so that it would have a mean closer to zero (1.0 to 0.32). Then, I generated new data from preexisting data based on which classifier bins were below the mean bin size. This resulted in my lowering the variance of my data by 56% and improving my validation set accuracy to 92.8%.
 
-##### Solution
+##### Solution 4 (Multi-Scale Convolusional Neural Network)
 
-If a well known architecture was chosen:
-* What architecture was chosen?
-* Why did you believe it would be relevant to the traffic sign application?
-* How does the final model's accuracy on the training, validation and test set provide evidence that the model is working well?
+In revisiting the architecture component of the solution, I decided to create a new architecture adapted from the one described in [this](https://www.researchgate.net/publication/224260345_Traffic_sign_recognition_with_multi-scale_Convolutional_Networks) paper and previously used by [this](https://github.com/jeremy-shannon/CarND-Traffic-Sign-Classifier-Project) student. The major change from this method and the LeNet method was that the outputs from my second convolusional / maxpool layer were fed into two different components. The first output fed into a convolusional filter and this output was flattened and combined with the flattened outputs of the previous layer. Furthermore, this output was connected to only one fully connected layer. This differs from LeNet, which ended in multiple fully connected layers. 
+
+This change resulted in a 93.3% accuracy on the validation set!
+
+##### Final Solution (Massive data generation)
+
+To achieve an even higher accuracy, I lowered the variance of the data set from 383681.36 to 4.69 by bringing the number of training images up from 34,799 to 86,473. I generated images by randomly rotating, translating, and brightening preexisting images. This resulted in a validation set accuracy of 94.6%.
+
+<b>Note</b>: variance measured with `np.bincount(y_train)`, with `y_train` being the array of labels for the training data set.
+
+With a 94.6% accuracy on the validation set and a 93.3% accuracy on the test set, this model appears to not be overfitting the training data.
 
 ##### Activation Function
 
@@ -127,36 +135,28 @@ A future modification to the preprocessing step involves utilizing the 'coords' 
 
 #### 1. Choose five German traffic signs found on the web and provide them in the report. For each image, discuss what quality or qualities might be difficult to classify.
 
-Here are five German traffic signs that I found on the web:
+Five German traffic signs found online are show below
 
-![onlineTrafficSignImages][onlineTrafficSignImages]
+| Original |  
+|:--------:|
+| ![onlineTrafficSignImages][onlineTrafficSignImages] | 
 
-Here is 
+| Preprocessed |  
+|:--------:|
+| ![onlineTrafficSignImagesPreprocessed][onlineTrafficSignImagesPreprocessed] | 
 
 #### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
 
+TODO:
+
 Here are the results of the prediction:
 
-| Image			        |     Prediction	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Stop Sign      		| Stop sign   									| 
-| U-turn     			| U-turn 										|
-| Yield					| Yield											|
-| 100 km/h	      		| Bumpy Road					 				|
-| Slippery Road			| Slippery Road      							|
+[onlineTrafficSignImagesPredictions]: ./output_images/onlineTrafficSignImagesPredictions.jpg "onlineTrafficSignImagesPredictions"
 
 The model was able to correctly guess 2 of the 5 traffic signs, which gives an accuracy of 40%. This did worse than the 
 
 #### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
 
-
-| Probability         	|     Prediction	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| .60         			| Stop sign   									| 
-| .20     				| U-turn 										|
-| .05					| Yield											|
-| .04	      			| Bumpy Road					 				|
-| .01				    | Slippery Road      							|
 
 ![onlineTrafficSignImagesPredictions][onlineTrafficSignImagesPredictions]
 
