@@ -90,11 +90,11 @@ The final model architecture I used to acheive over 94% accuracy on the test and
 
 | Layer # |  Layer Type | Filter | Stride | Input | Output |
 |:-------:|:-----------:|:------:|:------:|:-----:|:------:|
-| 1 |  Convolusion | 5 x 5 x 6 | 1 x 1 | 32 x 32 x 1 | 28 x 28 x 6 |
+| 1 |  Convolusion w/ ReLU | 5 x 5 x 6 | 1 x 1 | 32 x 32 x 1 | 28 x 28 x 6 |
 | 2 |  Max Pool | 2 x 2 | 2 x 2 | 28 x 28 x 6 | 14 x 14 x 6 |
-| 3 |  Convolusion | 5 x 5 x 16 | 1 x 1 | 14 x 14 x 6 | 10 x 10 x 16 |
+| 3 |  Convolusion w/ ReLU | 5 x 5 x 16 | 1 x 1 | 14 x 14 x 6 | 10 x 10 x 16 |
 | 4 |  Max Pool | 2 x 2 | 2 x 2 | 10 x 10 x 16 | 5 x 5 x 16 |
-| 5 |  Convolusion | 5 x 5 x 400 | 1 x 1 | 5 x 5 x 16 | 1 x 1 x 400 |
+| 5 |  Convolusion w/ ReLU | 5 x 5 x 400 | 1 x 1 | 5 x 5 x 16 | 1 x 1 x 400 |
 | 6 | Flatten Combine | N/A | N/A | Layer 4 output of (5 x 5 x 16) and Layer 5 output of (1 x 1 x 400) | 800 |
 | 7 |  Fully Connected Layer | N/A | N/A | 800 | 43 |
 
@@ -102,7 +102,7 @@ The architecture consists of 3 convolusions with a max-pool between each. The ou
 
 The filters used on the convolusions are all 5 x 5 with an increasing depth for each. The max pool layers used 2 x 2 strides and cut the number of outputs to their next respective layer by 1/4th of each max pool's respective input. Resummarizing the flatten combine step described above, there are 400 total nodes produced by Layer 4 and 400 total nodes produced by Layer 5, and these nodes are combined into 800 nodes that become input to the fully connected layer.
 
-There was not any dropout added in the final design. 
+Also, a rectified linear unit (ReLU) activation function is applied to the outputs of each convolusion layer.
 
 #### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
