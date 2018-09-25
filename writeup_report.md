@@ -86,6 +86,8 @@ At one point in time I tried to apply a shear and scale, and I found that doing 
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
+The final model architecture I used to acheive over 94% accuracy on the test and validation sets is given in the table below.
+
 | Layer # |  Layer Type | Filter | Stride | Input | Output |
 |:-------:|:-----------:|:------:|:------:|:-----:|:------:|
 | 1 |  Convolusion | 5 x 5 x 6 | 1 x 1 | 32 x 32 x 1 | 28 x 28 x 6 |
@@ -96,9 +98,13 @@ At one point in time I tried to apply a shear and scale, and I found that doing 
 | 6 | Flatten Combine | N/A | N/A | Layer 4 output of (5 x 5 x 16) and Layer 5 output of (1 x 1 x 400) | 800 |
 | 7 |  Fully Connected Layer | N/A | N/A | 800 | 43 |
 
+TODO: regurgitate the table in laymans terms.
+
 #### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
-TODO: My final model used an Adam Optimizer, a 128 image batch size, 20 epochs, and a 0.0001 learning rate.
+A softmax cross entropy loss function was used in tandem with an Adam Optimizer to train the model. The model used a 128 image batch size, 20 epochs, and a 0.003 learning rate.
+
+TODO: anything else?
 
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
