@@ -42,9 +42,9 @@ You're reading it! and here is a link to my [project code](https://github.com/ka
 
 #### 1. Provide a basic summary of the data set. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
 
-* The size of training set is 34799
-* The size of the validation set is 4410
-* The size of test set is 12630
+* The size of training set is 34,799 images
+* The size of the validation set is 4,410 images
+* The size of test set is 12,630 images
 * The shape of a traffic sign image is 32 x 32 with 3 channels
 * The number of unique classes/labels in the data set is 43
 
@@ -98,23 +98,27 @@ The final model architecture I used to acheive over 94% accuracy on the test and
 | 6 | Flatten Combine | N/A | N/A | Layer 4 output of (5 x 5 x 16) and Layer 5 output of (1 x 1 x 400) | 800 |
 | 7 |  Fully Connected Layer | N/A | N/A | 800 | 43 |
 
-TODO: regurgitate the table in laymans terms.
+The architecture consists of 3 convolusions with a max-pool between each. The output of the last max pool and the last convolusion are both flattened and combined together to form 800 nodes. These 800 nodes are the inputs to a fully connected layer that scales this number to the number of classifiers in this problem. These logits are then used for future training, prediction, etc.
+
+The filters used on the convolusions are all 5 x 5 with an increasing depth for each. The max pool layers used 2 x 2 strides and cut the number of outputs to their next respective layer by 1/4th of each max pool's respective input. Resummarizing the flatten combine step described above, there are 400 total nodes produced by Layer 4 and 400 total nodes produced by Layer 5, and these nodes are combined into 800 nodes that become input to the fully connected layer.
+
+There was not any dropout added in the final design. 
 
 #### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
 A softmax cross entropy loss function was used in tandem with an Adam Optimizer to train the model. The model used a 128 image batch size, 20 epochs, and a 0.003 learning rate.
 
-TODO: anything else?
-
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
 ##### Initial Solution (LeNet-5)
 
-My initial solution to the problem involved a LeNet-5 architecture applied to normalized (0.0 to 1.0 pixel values) gray scaled (32x32x1) images. This resulted in an accuracy of 89% on the validation set. To increase accuracy, I initially chose to randomly rotate 25% of the training images by a multiple of 90 degrees. Adding random rotations resulted in an 82% accuracy on the validation set. This could be beneficial if the input images are expected to contain traffic signs at a large range of angles, but data visualizations of the testing and validation sets show that this is not the case. Also, traffic signs that depict turning in one direction and are rotated 180 degrees in the opposite direction could be one cause of the reduction in accuracy.
+My initial solution to the problem involved a LeNet-5 architecture applied to normalized (0.0 to 1.0 pixel values) gray scaled (32x32x1) images. This resulted in an accuracy of 89% on the validation set. To increase accuracy, I initially chose to randomly rotate 25% of the training images by a multiple of 90 degrees. Adding random rotations resulted in an 82% accuracy on the validation set. This could be beneficial if the input images are expected to contain traffic signs at a large range of angles, but data visualizations of the testing and validation sets show that this is not the case. Also, traffic signs that depict turning in one direction, and are programatically rotated 180 degrees in the opposite direction, could be one cause of the reduction in accuracy.
 
 ##### Solution 2 (SimpNet)
 
-I decided to rewrite my model to follow the SimpNet architecture described in [this](https://arxiv.org/pdf/1802.06205.pdf) paper. The paper presents a deep convolusional network that uses less parameters and operations while still empirically achieving state-of-the-art on standard data sets (i.e. MNST). They discussed the benefits of max-pooling over strided convolutions, they proposed "SAF-pooling" (essentially max-pooling followed by dropout), and why not to use 1x1 convolutions or fully connected layers in the beginning of an architecture. Unfortunately, this 'minimal' solution resulted in a model with so many layers and parameters that I was unable to run the model on my puny laptop. This could be a result of my incorrect implementation, and I may possibly revisit this in the future.
+I decided to rewrite my model to follow the SimpNet architecture described in [this](https://arxiv.org/pdf/1802.06205.pdf) paper. The paper presents a deep convolusional network that uses less parameters and operations while still empirically achieving state-of-the-art on standard data sets (i.e. MNST). They discussed the benefits of max-pooling over strided convolutions, they proposed "SAF-pooling" (essentially max-pooling followed by dropout), and why not to use 1x1 convolutions or fully connected layers in the beginning of an architecture. Unfortunately, this 'minimal' solution resulted in a model with so many layers and parameters that I was unable to run the model on my puny laptop. 
+
+<b>Note</b>: This could be a result of my incorrect implementation, and I may possibly revisit this in the future.
 
 ##### Solution 3 (Augmenting the Data Set)
 
@@ -128,7 +132,7 @@ This change resulted in a 93.3% accuracy on the validation set!
 
 ##### Final Solution (Massive data generation)
 
-To achieve an even higher accuracy, I lowered the variance of the data set from 383681.36 to 4.69 by bringing the number of training images up from 34,799 to 129,797. I generated images by randomly rotating, translating, and brightening preexisting images. This resulted in a validation set accuracy of 94.9%.
+To achieve an even higher accuracy, I lowered the variance of the data set from 383681.36 to 16.06 by bringing the number of training images up from 34,799 to 129,797. I generated images by randomly rotating, translating, and brightening preexisting images. This resulted in a validation set accuracy of 94.9%.
 
 <b>Note</b>: Variance measured with `np.bincount(y_train)`, with `y_train` being the array of labels for the training data set.
 
@@ -158,7 +162,7 @@ Five online German traffic sign images are shown below with and without image pr
 
 ![onlineTrafficSignImagesBeforeAndAfterPreprocessing][onlineTrafficSignImagesBeforeAndAfterPreprocessing]
 
-A table discussing the the qualitie(s) that may prove difficult to classify for each image is shown below.
+A table discussing the the qualities that may prove difficult to classify for each image is shown below.
 
 | Label  | Possible Complications |
 |:------:|:-----------:|
@@ -177,7 +181,7 @@ A table showing the model's predictions for the 5 traffic sign images found onli
 | Stop | Speed limit (30km/h) |
 | Speed limit (80km/h) | Speed limit (100km/h) |
 | Go straight or left | Go straight or left |
-| Children crossing | Right-of-way at the next intersection |
+| Children crossing | Beware of ice/snow |
 | Speed limit (50km/h) | Speed limit (50km/h) |
 
 The model was able to correctly guess 2 of the 5 traffic signs, which gives an accuracy of 40%, thereby performing over 50% worse than both the validation set and test set. 
@@ -198,7 +202,7 @@ The model appeared to be nearly 100% certain when predicting all of the images. 
 
 ![onlineTrafficSignImagesPredictions][onlineTrafficSignImagesPredictions]
 
-Notice how the only image in which the model was not 100% certain of it's prediction, was the stop sign. The model has a 0.1% confidence in the stop sign being a stop sign, a 'close' second best!
+Notice how the only image in which the model was not 100% certain of it's prediction was the stop sign. The model has a 0.1% confidence in the stop sign being a stop sign, a 'close' second best!
 
 ### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
 #### 1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
