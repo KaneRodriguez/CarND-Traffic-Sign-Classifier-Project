@@ -60,9 +60,7 @@ Here is an exploratory visualization of the data set. It is a bar chart showing 
 
 #### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
 
-First, I decided to convert the images to grayscale because I wanted to ignore the noise that can come with color. In this case, the majority of the image information to be gained lies within the shape of the traffic sign, the shape of the images depicted on the sign, and any text on the sign. I also normalized the image, per the projects recommendations, because doing so leads to a mean closer to zero for the training data. In practice, this helps speed up the time to train our model. 
-
-<b>Note</b>: Color information can be useful, but processing 3 channels provides an increasingly computationally complex problem than a 1 channel image!
+First, I decided to convert the images to grayscale because ``I wanted to ignore the noise that can come with color`` I wanted to decrease the overall amount of parameters by reducing 3 channels to 1 channel. I also normalized the image, per the projects recommendations, because doing so leads to a mean closer to zero for the training data. In practice, this helps speed up the time to train our model. 
 
 An example of a traffic sign image before and after preprocessing is given below:
 
