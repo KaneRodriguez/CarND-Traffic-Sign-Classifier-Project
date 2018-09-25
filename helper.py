@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import math
 
 # globally loaded sign names csv data
 gTrafficSignClassifierCsvData = pd.read_csv("signnames.csv")
@@ -27,13 +28,20 @@ def plotImages(images, titles=[""], columns=1, figsize=(20,10), gray=False, save
     fig = plt.gcf()
     
     for i, image in enumerate(images):
-        plt.subplot(len(images) / columns + 1, columns, i + 1)
+        rows = math.ceil(len(images) / columns)
+        plt.subplot(rows, columns, i + 1)
         
         if len(images) == len(titles):
             plt.gca().set_title(titles[i])
         else:
             plt.gca().set_title(titles[i % columns])
        
+        # if gray is a list, each item  
+        # corresponds to if each row is gray
+        tmpGray = gray
+        if isinstance(gray, (list,)):
+            tmpGray = gray[i // columns]
+            
         if gray:
             plt.imshow(image, cmap="gray")
         else:
