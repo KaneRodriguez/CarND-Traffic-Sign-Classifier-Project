@@ -24,8 +24,8 @@ The goals / steps of this project are the following:
 [originalAndGeneratedImages]:     ./output_images/originalAndGeneratedImages.jpg "originalAndGeneratedImages"
 [originalAndPreprocessedImages]:     ./output_images/originalAndPreprocessedImages.jpg "originalAndPreprocessedImages"
 
-[onlineTrafficSignImages]: ./output_images/onlineTrafficSignImages.jpg "Online Traffic Sign Immges"
-[onlineTrafficSignImagesPreprocessed]: ./output_images/onlineTrafficSignImagesPreprocessed.jpg "onlineTrafficSignImagesPreprocessed"
+[onlineTrafficSignImagesBeforeAndAfterPreprocessing]: ./output_images/onlineTrafficSignImagesBeforeAndAfterPreprocessing.jpg "onlineTrafficSignImagesBeforeAndAfterPreprocessing"
+
 [onlineTrafficSignImagesPredictions]: ./output_images/onlineTrafficSignImagesPredictions.jpg "onlineTrafficSignImagesPredictions"
 
 ## Rubric Points
@@ -70,13 +70,13 @@ An example of a traffic sign image before and after preprocessing is given below
 
 To minimize the variance of the data, additional data was generated. 
 
-I generated new images from preexisting images for each classifier in the training set. New images were generated for each bin until all bins had the same amount of images as the max bin. 
+I generated new images from preexisting images for each classifier in the training set. New images were generated for each labeled traffic sign until all traffic signs had 150% the number of images as the previous traffic sign label with the highest frequency. This resulted in a training data set boost from 34,799 images to 129,797 images.
 
 The resulting classifier distribution in the augmented data set is given in the chart below.
 
 ![augmentedDataDistribution][augmentedDataDistribution]
 
-The steps to generating new images involved two modifications. First, I convert the image into HLS format and alter the brightness of each pixel by anywhere from 80% to 120% of the original pixel. I convert the image back into RGB format, and I randomly rotate the image anywhere from -10 to 10 degrees. Finally, I randomly translate the image in the x or y direction anywhere from -2 to 2 pixels.
+The steps to generating new images involved three modifications. First, I convert the image into HLS format and alter the brightness of each pixel by anywhere from 80% to 120% of the original pixel. I convert the image back into RGB format, and I randomly rotate the image anywhere from -10 to 10 degrees. Finally, I randomly translate the image in the x or y direction anywhere from -2 to 2 pixels.
 
 Here is an example of an original image and a generated image:
 
@@ -86,7 +86,15 @@ At one point in time I tried to apply a shear and scale, and I found that doing 
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
-TODO
+| Layer # |  Layer Type | Filter | Stride | Input | Output |
+|:-------:|:-----------:|:------:|:------:|:-----:|:------:|
+| 1 |  Convolusion | 5 x 5 x 6 | 1 x 1 | 32 x 32 x 1 | 28 x 28 x 6 |
+| 2 |  Max Pool | 2 x 2 | 2 x 2 | 28 x 28 x 6 | 14 x 14 x 6 |
+| 3 |  Convolusion | 5 x 5 x 16 | 1 x 1 | 14 x 14 x 6 | 10 x 10 x 16 |
+| 4 |  Max Pool | 2 x 2 | 2 x 2 | 10 x 10 x 16 | 5 x 5 x 16 |
+| 5 |  Convolusion | 5 x 5 x 400 | 1 x 1 | 5 x 5 x 16 | 1 x 1 x 400 |
+| 6 | Flatten Combine | N/A | N/A | Layer 4 output of (5 x 5 x 16) and Layer 5 output of (1 x 1 x 400) | 800 |
+| 7 |  Fully Connected Layer | N/A | N/A | 800 | 43 |
 
 #### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
@@ -114,11 +122,11 @@ This change resulted in a 93.3% accuracy on the validation set!
 
 ##### Final Solution (Massive data generation)
 
-To achieve an even higher accuracy, I lowered the variance of the data set from 383681.36 to 4.69 by bringing the number of training images up from 34,799 to 86,473. I generated images by randomly rotating, translating, and brightening preexisting images. This resulted in a validation set accuracy of 94.6%.
+To achieve an even higher accuracy, I lowered the variance of the data set from 383681.36 to 4.69 by bringing the number of training images up from 34,799 to 129,797. I generated images by randomly rotating, translating, and brightening preexisting images. This resulted in a validation set accuracy of 94.9%.
 
-<b>Note</b>: variance measured with `np.bincount(y_train)`, with `y_train` being the array of labels for the training data set.
+<b>Note</b>: Variance measured with `np.bincount(y_train)`, with `y_train` being the array of labels for the training data set.
 
-With a 94.6% accuracy on the validation set and a 93.3% accuracy on the test set, this model appears to not be drastically overfitting the training data.
+With a 94.9% accuracy on the validation set and a 94% accuracy on the test set, this model appears to not be drastically overfitting the training data.
 
 ##### Activation Function
 
@@ -134,39 +142,57 @@ A future modification to the preprocessing step involves utilizing the 'coords' 
 
 Per the recommendations outlined in the [paper](https://arxiv.org/pdf/1802.06205.pdf) on SimpNet, I attempted to implement SAF's; I found that this did not improve my accuracy. However, a future modification to the current architecture would be to follow the papers suggestions and replace any 5x5 convolusional layers with multiple 3x3 layers in order to make our network 'deeper.' 
 
-Another, more intuitive, architectural change involves not converting to grayscale and leveraging the 3 color channels that each image comes with. This will provide more information for differentiating traffic signs of different colors. Although this will provide more information for differentiating traffic signs of different base colors, I believe this has the potential to introduce some noise into the model. For example, stop sign images used to train the model could be captured in a different lighting than some stop signs we wish to detect in the real world. Depending on how much weight the model put on color, the model could possibly classify the input stop sign image as something else entirely! To guard against this, generating new images with a varying amount of brightness could be mandatory in order to make the model robust in these situations.
+Another, more intuitive, architectural change involves not converting to grayscale and leveraging the 3 color channels that each image comes with. Although this may provide more information for differentiating traffic signs of different base colors, I believe this has the potential to introduce some noise into the model. For example, stop sign images used to train the model could be captured in a different lighting than some stop signs we wish to detect in the real world. Depending on how much weight the model put on color, the model could possibly classify the input stop sign image as something else entirely! To guard against this, generating new images with a varying amount of brightness could be mandatory in order to make the model robust in these situations.
 
 ### Test a Model on New Images
 
 #### 1. Choose five German traffic signs found on the web and provide them in the report. For each image, discuss what quality or qualities might be difficult to classify.
 
-Five German traffic signs found online are show below
+Five online German traffic sign images are shown below with and without image preprocessing.
 
-| Original |  
-|:--------:|
-| ![onlineTrafficSignImages][onlineTrafficSignImages] | 
+![onlineTrafficSignImagesBeforeAndAfterPreprocessing][onlineTrafficSignImagesBeforeAndAfterPreprocessing]
 
-| Preprocessed |  
-|:--------:|
-| ![onlineTrafficSignImagesPreprocessed][onlineTrafficSignImagesPreprocessed] | 
+A table discussing the the qualitie(s) that may prove difficult to classify for each image is shown below.
+
+| Label  | Possible Complications |
+|:------:|:-----------:|
+| Stop | The traffic sign is at an angle. Noise in background caused by tree. |
+| Speed limit (80km/h) | The traffic sign is at an angle. Noise in background caused by road and mountains.  |
+| Go straight or left | There is  noise caused by artificial markings on image. |
+| Children Crossing | The traffic sign is flipped vertically in comparison to the children crossing signs found in the training set |
+| Speed limit (50km/h)  | The image appears completely artificial and may not have some real world features that are model could be biased towards. |
 
 #### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
 
-Here are the results of the predictions, followed by the confidence the model had on each label and the other top 4 labels for each:
+A table showing the model's predictions for the 5 traffic sign images found online is shown below.
 
-[onlineTrafficSignImagesPredictions]: ./output_images/onlineTrafficSignImagesPredictions.jpg "onlineTrafficSignImagesPredictions"
+| Label | Prediction |
+|:------:|:-----------:|
+| Stop | Speed limit (30km/h) |
+| Speed limit (80km/h) | Speed limit (100km/h) |
+| Go straight or left | Go straight or left |
+| Children crossing | Right-of-way at the next intersection |
+| Speed limit (50km/h) | Speed limit (50km/h) |
 
-The model was able to correctly guess TODO of the TODO traffic signs, which gives an accuracy of TODO%, thereby performing TODO than the validation set and test set. 
+The model was able to correctly guess 2 of the 5 traffic signs, which gives an accuracy of 40%, thereby performing over 50% worse than both the validation set and test set. 
 
-I believe the model incorrectly labeled the TODO image due to the image losing important traffic sign information after preprocessing. One can see above (Question 1 of this section) that the TODO traffic sign has is unrecognizable to the human eye as a TODO image. 
+I believe the model incorrectly labeled the Speed limit (80km/h) image due to the image losing important traffic sign information after preprocessing. One can see above (Question 1 of this section) that the this traffic sign is unrecognizable to the human eye as an 80km/h speed limit sign after image preprocessing.
 
-This loss occured when reshaping the input image to a 32x32 image. Possible rectifications to this issue include correctly downsampling the image or possibly running a shape detection algorithm to automatically detect the sign and crop that section of the image.
+This data loss occured when reshaping the input image to a 32x32 image. Possible rectifications to this issue include correctly downsampling the image or possibly running a shape detection algorithm to automatically detect the sign and crop that section of the image.
+
+The children crossing sign was incorrectly labeled, and the sign that it was mistakenly classified for does have the same triangular shape as the children crossing sign. The reason why the model did not label this sign correctly is likely due to this sign being the vertical inverse of all children crossing signs used in the training and validation image sets.
+
+The stop sign was likely misidentified as a speed limit sign due to the way in which the image was reshaped to a 32x32 image. Looking at the preprocessed version of the stop sign above, one can see that the octogonal shape that makes the sign so unique is less pronounced in the preprocessed image (allowing it to be mistaken for a speed limit sign with a circular shape). 
+
+The fact that the model misidentified the stop sign based on the shape tells me that the model places a heavier weight on shapes of traffic signs than the text/pictograms depicted within.
 
 #### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
 
-The model appeared to be TODO certain when predicting TODO of the images. The model was TODO TODO TODO TODO
+The model appeared to be nearly 100% certain when predicting all of the images. The original images are displayed alongside the model's top 5 predictions for each below.
 
-As described in question 2 above, the model had a difficult time recognizing the preprocessed form of the TODO image. 
+![onlineTrafficSignImagesPredictions][onlineTrafficSignImagesPredictions]
+
+Notice how the only image in which the model was not 100% certain of it's prediction, was the stop sign. The model has a 0.1% confidence in the stop sign being a stop sign, a 'close' second best!
 
 ### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
 #### 1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
